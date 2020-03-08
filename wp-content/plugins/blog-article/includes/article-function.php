@@ -11,12 +11,6 @@
 //     require_once str_replace("\\", "/", $class) . ".php";
 // });
 
-use windows_azure_storage\Common\ServicesBuilder;
-use windows_azure_storage\Common\ServiceException;
-use windows_azure_storage\Blob\Models\Block;
-use windows_azure_storage\Blob\Models\BlockList;
-use windows_azure_storage\Blob\Models\BlobBlockType;
-
 function get_all_article($args = array()){
     global $wpdb;
     $table_name = $wpdb->prefix.'article';
@@ -162,195 +156,41 @@ function get_all_categorys(){
 
 }
 
-function upload_image_blob()
+function upload_image_s3($directory)
 {
-    $settings = array(
-        "container" => "major-minor",
-        "protocol" => "https",
-        "account_name" => "mijorminorstorage",
-        "account_key" => "KEUWRZs62sQxfwyBNVrpHCCfW87Jhx953tXeyhZGa8sLtBu2XmijsyCOitQa/G7ksDXx+UCxmoowds1heCHjWw=="
-    );
+    $ObjectUrl = '#';
+    if ($_FILES['url_file']['size'] > 0) {
+        $bucket = 'cgo-indonesia-dev';
+        $temp_file_location = $_FILES['url_file']['tmp_name'];
 
-    
-    $connectionString = "DefaultEndpointsProtocol=" . $settings["protocol"] .
-        ";AccountName=" . $settings["account_name"] .
-        ";AccountKey=" . $settings["account_key"] . ";";
-    $tes = new WindowsAzureStorageUtil();
-    $tes2 = $tes->uniqueBlobName($settings['container'],$_FILES['file']['name']);
-    $blobRestProxy = BlobRestProxy::createBlobService($connectionString);
-    
-    $file_name = $_FILES['image']['tmp_name'];
-    $blob_name = basename($file_name);
-    
-     # Create the BlobService that represents the Blob service for the storage account
-     $createContainerOptions = new CreateContainerOptions();
-    
-     $createContainerOptions->setPublicAccess(PublicAccessType::CONTAINER_AND_BLOBS);
-     
-     // Set container metadata.
-     $createContainerOptions->addMetaData("key1", "value1");
-     $createContainerOptions->addMetaData("key2", "value2");
- 
-     $containerName = $settings["container"] . generateRandomString();
- 
-         // Create container.
-         $blobClient->createContainer($containerName, $createContainerOptions);
-         $myfile = $file_name;
-         fclose($myfile);
-     
-         # Upload file as a block blob
-         echo "Uploading BlockBlob: ".PHP_EOL;
-         echo $fileToUpload;
-         echo "<br />";
-         
-         $content = fopen($fileToUpload, "r");
-     
-         //Upload blob
-         $blobClient->createBlockBlob($containerName, $fileToUpload, $content);
+        $s3 = new Aws\S3\S3Client([
+            'region'  => 'ap-southeast-1',
+            'version' => 'latest'
+        ]);
 
+        // check redundancy filename
+        $filename = aws_s3_check_image_exists($bucket, $_FILES['url_file'], $s3,$directory);
+
+        try {
+            // Upload data.
+            $result = $s3->putObject([
+                'Bucket' => $bucket,
+                'Key'    => $filename,
+                'SourceFile' => $temp_file_location,
+                'ContentType' => mime_content_type($temp_file_location),
+                'ACL'    => 'public-read',
+                'connection_timeout' => 0
+            ]);
+
+            // Print the URL to the object.
+            $ObjectUrl = $result['ObjectURL'];
+        } catch (Aws\S3\Exception\S3Exception $e) {
+            return new WP_Error('error-image-upload', __('Error : ' . $e->getMessage() . PHP_EOL, 'scdl'));
+        }
+    }
+    return $ObjectUrl;
 }
 
-
-function uploadBlob($blobName,$realPath,$file_name) {
-         
-    $accesskey = "+oTwO7DxwMU4ouQ3lomQmYDVvl7WqnpMrp5z/gxcTxeqIGIDzk2O/U93xUcwxWiGIJZAUrK8V4aNPoHOJxemhQ==";
-    $storageAccount = 'majorminorstorage';
-    
-    $media_type =  $_FILES[$file_name]['type'];
-   
-    if($media_type != 'video/mp4'){
-        
-    // Location
-        $location =  dirname(__FILE__)."/".$blobName;
-
-    // Compress Image
-        compressImage($_FILES[$file_name]['tmp_name'],$location,60);
-
-        $filetoUpload = $location;
-
-    }else{        
-        $filetoUpload = $_FILES[$file_name]['tmp_name'];
-    }
-
-    $containerName = 'major-minor';
-    $destinationURL = "https://$storageAccount.blob.core.windows.net/$containerName/$blobName";
-
-    $currentDate = gmdate("D, d M Y H:i:s T", time());
-    $handle = fopen($filetoUpload, "r");
-    $fileLen = filesize($filetoUpload);
-
-    $headerResource = "x-ms-blob-cache-control:max-age=3600\nx-ms-blob-type:BlockBlob\nx-ms-date:$currentDate\nx-ms-version:2015-12-11";
-    $urlResource = "/$storageAccount/$containerName/$blobName";
-
-    
-
-if($media_type == 'image/jpeg' || $media_type == 'image/jpg' || $media_type == 'image/png'){
-    $arraysign = array();
-    $arraysign[] = 'PUT';               /*HTTP Verb*/  
-    $arraysign[] = '';                  /*Content-Encoding*/  
-    $arraysign[] = '';                  /*Content-Language*/  
-    $arraysign[] = $fileLen;            /*Content-Length (include value when zero)*/  
-    $arraysign[] = '';                  /*Content-MD5*/  
-    $arraysign[] = 'image/png';         /*Content-Type*/  
-    $arraysign[] = '';                  /*Date*/  
-    $arraysign[] = '';                  /*If-Modified-Since */  
-    $arraysign[] = '';                  /*If-Match*/  
-    $arraysign[] = '';                  /*If-None-Match*/  
-    $arraysign[] = '';                  /*If-Unmodified-Since*/  
-    $arraysign[] = '';                  /*Range*/  
-    $arraysign[] = $headerResource;     /*CanonicalizedHeaders*/
-    $arraysign[] = $urlResource;        /*CanonicalizedResource*/
-
-    $str2sign = implode("\n", $arraysign);
-
-    $sig = base64_encode(hash_hmac('sha256', urldecode(utf8_encode($str2sign)), base64_decode($accesskey), true));  
-    $authHeader = "SharedKey $storageAccount:$sig";
-
-    $headers = [
-        'Authorization: ' . $authHeader,
-        'x-ms-blob-cache-control: max-age=3600',
-        'x-ms-blob-type: BlockBlob',
-        'x-ms-date: ' . $currentDate,
-        'x-ms-version: 2015-12-11',
-        'Content-Type: image/png',
-        'Content-Length: ' . $fileLen
-    ];
-
-    $ch = curl_init($destinationURL);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-    curl_setopt($ch, CURLOPT_INFILE, $handle); 
-    curl_setopt($ch, CURLOPT_INFILESIZE, $fileLen); 
-    curl_setopt($ch, CURLOPT_UPLOAD, true); 
-    $result = curl_exec($ch);
-
-    echo ('Result<br/>');
-    print_r($result);
-
-    echo ('Error<br/>');
-    print_r(curl_error($ch));
-
-    curl_close($ch);
-
-}elseif($media_type == 'video/mp4'){
-        $arraysign = array();
-        $arraysign[] = 'PUT';               /*HTTP Verb*/  
-        $arraysign[] = '';                  /*Content-Encoding*/  
-        $arraysign[] = '';                  /*Content-Language*/  
-        $arraysign[] = $fileLen;            /*Content-Length (include value when zero)*/  
-        $arraysign[] = '';                  /*Content-MD5*/  
-        $arraysign[] = 'video/mp4';         /*Content-Type*/  
-        $arraysign[] = '';                  /*Date*/  
-        $arraysign[] = '';                  /*If-Modified-Since */  
-        $arraysign[] = '';                  /*If-Match*/  
-        $arraysign[] = '';                  /*If-None-Match*/  
-        $arraysign[] = '';                  /*If-Unmodified-Since*/  
-        $arraysign[] = '';                  /*Range*/  
-        $arraysign[] = $headerResource;     /*CanonicalizedHeaders*/
-        $arraysign[] = $urlResource;        /*CanonicalizedResource*/
-
-        $str2sign = implode("\n", $arraysign);
-
-    $sig = base64_encode(hash_hmac('sha256', urldecode(utf8_encode($str2sign)), base64_decode($accesskey), true));  
-    $authHeader = "SharedKey $storageAccount:$sig";
-
-    $headers = [
-        'Authorization: ' . $authHeader,
-        'x-ms-blob-cache-control: max-age=3600',
-        'x-ms-blob-type: BlockBlob',
-        'x-ms-date: ' . $currentDate,
-        'x-ms-version: 2015-12-11',
-        'Content-Type: video/mp4',
-        'Content-Length: ' . $fileLen
-    ];
-
-    $ch = curl_init($destinationURL);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-    curl_setopt($ch, CURLOPT_INFILE, $handle); 
-    curl_setopt($ch, CURLOPT_INFILESIZE, $fileLen); 
-    curl_setopt($ch, CURLOPT_UPLOAD, true); 
-    $result = curl_exec($ch);
-
-    echo ('Result<br/>');
-    print_r($result);
-
-    echo ('Error<br/>');
-    print_r(curl_error($ch));
-
-    curl_close($ch);
-    }
-    
-    return $destinationURL;
-
-    
-}
 function create_article($args = array())
     {
         global $wpdb;

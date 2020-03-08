@@ -47,23 +47,8 @@ class Article_Form_Handler
         $file = file_exists($_FILES['url_file']['tmp_name']) ? $_FILES["url_file"] : '';
         $user = wp_get_current_user();
         
-        // if ($file !== '')  {
-        //     $media_type =  $_FILES['file']['type'];
-        //     if($media_type == 'image/jpeg' || $media_type == 'image/jpg' || $media_type == 'image/png'){
-        //     $unique_file = uniqid() . '.jpeg';
-        //     $file['name'] =  $unique_file;
-        //     }elseif($media_type == 'video/mp4'){
-        //     $unique_file = uniqid() . '.mp4';
-        //     $file['name'] =  $unique_file;
-        //     }
-        //     $imagePath = uploadBlob($file['name'],$file['tmp_name'],'file');
-        //     if (!$file && is_wp_error($imagePath)) {
-        //     $errors[] = __('Error : ' . $imagePath->get_error_messages(), 'bnr');
-        //     }
-        //     $deleteImageTemp =  dirname(__FILE__)."/".$unique_file;
-        //     unlink($deleteImageTemp);
-        // } 
-        //is current_event?
+        if ($file !== '') $imagePath = upload_image_s3('blog');
+
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
         //some basic validation
@@ -96,7 +81,7 @@ class Article_Form_Handler
             'description' => $description,
             'category_travel' => $category,
             'time' => $time,
-            // 'url_file' =>  isset($imagePath) ? strval($imagePath) : '#',
+            'url_file' =>  isset($imagePath) ? strval($imagePath) : '#',
         );
 
         //New or Edit
