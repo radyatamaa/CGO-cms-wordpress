@@ -116,6 +116,25 @@ function get_all_article_api($request = array()){
     return $item;
  }
 
+ function get_user_by_username_api($request = array()){
+    global $wpdb;
+
+    $username = isset($request['username']) ? stripslashes(sanitize_text_field($request->get_param('username'))) : '';
+
+    $table_name = $wpdb->prefix.'users';
+
+    $query = "SELECT * FROM $table_name WHERE user_login = '$username'";
+
+    $item = $wpdb->get_row($query);
+
+    unset($item->user_pass,$item->user_registered,$item->user_activation_key);
+    
+    if($item == null){
+        $item = new stdClass;
+    }
+
+    return $item;
+ }
 function get_category_by_id($id){
     global $wpdb;
     $table_name = $wpdb->prefix.'category_travel';
@@ -325,6 +344,5 @@ function delete_article($id){
             return new WP_Error('sql-failed', __('Warning : ' . $wpdb->last_error, 'bnr'));
         }
 }
-    
 
 ?>

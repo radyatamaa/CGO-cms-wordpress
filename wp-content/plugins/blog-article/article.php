@@ -108,6 +108,15 @@ add_action('init', function(){
 
     register_rest_route(
         'cgo',
+        '/users/username',
+        array(
+            'methods' => 'GET',
+            'callback' => 'get_user_by_username_api',
+        )
+    );
+
+    register_rest_route(
+        'cgo',
         '/category',
         array(
             'methods' => 'GET',
