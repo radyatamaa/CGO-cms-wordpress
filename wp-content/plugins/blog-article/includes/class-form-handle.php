@@ -47,7 +47,7 @@ class Article_Form_Handler
         $file = file_exists($_FILES['url_file']['tmp_name']) ? $_FILES["url_file"] : '';
         $user = wp_get_current_user();
         
-        if ($file !== '') $imagePath = upload_image('blog');
+        if ($file !== '') $imagePath = upload_image('blog','url_file');
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 

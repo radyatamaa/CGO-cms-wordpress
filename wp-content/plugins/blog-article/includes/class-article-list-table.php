@@ -171,15 +171,15 @@ if(!class_exists('WP_List_Table')) {
 
     public function get_per_page()
     {
-        $user = get_current_user_id();
-        $screen = get_current_screen();
-        $screen_option = $screen->get_option('per_page', 'option');
-        $per_page = get_user_meta($user, $screen_option, true);
+    //     $user = get_current_user_id();
+    //     $screen = get_current_screen();
+    //     $screen_option = $screen->get_option('per_page', 'option');
+    //     $per_page = get_user_meta($user, $screen_option, true);
 
-        if (empty($per_page) || $per_page < 1) {
-            $per_page = $screen->get_option('per_page', 'default');
-        }
-
+    //     if (empty($per_page) || $per_page < 1) {
+    //         $per_page = $screen->get_option('per_page', 'default');
+    //     }
+        $per_page = 20;
         return (int) $per_page;
     }
    

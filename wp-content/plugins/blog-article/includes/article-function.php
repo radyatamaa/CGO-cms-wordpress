@@ -32,7 +32,7 @@ function get_all_article($args = array()){
         $query = 'SELECT * FROM '.$table_name.' WHERE is_deleted = 0';
 
         if(isset($_REQUEST['s']) && $_REQUEST['s'] != ''){
-            $query = $query .' AND '.$table_name.'.name LIKE "%' .$_REQUEST['s']. '%"';
+            $query = $query .' AND '.$table_name.'.title LIKE "%' .$_REQUEST['s']. '%"';
         }
 
         $query = $query. ' ORDER BY '.$table_name.'.'  .$args['orderby']. ' '. $args['order'] . ' LIMIT '. $args['offset'] . ', ' .$args['number'];
@@ -210,7 +210,7 @@ function upload_image_s3($directory)
     return $ObjectUrl;
 }
 
-function upload_image($directory){
+function upload_image($directory,$column_name){
     
 // VARIABLES
 // These are used in multiple places in the request. Replace the
@@ -220,7 +220,7 @@ $secretKey = 'zxHgl8hCa+VimNMNp9HOiX3Fjq8wA3kgnlqIF8ri';
 $bucket = 'cgo-indonesia-dev';
 $region = 'ap-southeast-1'; // us-west-2, us-east-1, etc
 $acl = 'public-read'; // private, public-read, etc
-$filePath = $_FILES['url_file']['tmp_name'];
+$filePath = $_FILES[$column_name]['tmp_name'];
 $fileName = $directory . '/' . uniqid() . '.jpeg';
 $fileType = 'image/jpeg';
 
