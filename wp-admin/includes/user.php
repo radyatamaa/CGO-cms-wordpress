@@ -91,6 +91,15 @@ function edit_user( $user_id = 0 ) {
 	if ( isset( $_POST['first_name'] ) ) {
 		$user->first_name = sanitize_text_field( $_POST['first_name'] );
 	}
+	if ( isset( $_POST['desc_user'] ) ) {
+		$user->desc_user = sanitize_text_field( $_POST['desc_user'] );
+	}
+	if ( isset( $_FILES['profile_url'] ) ) {
+		$user->profile_url = file_exists($_FILES['profile_url']['tmp_name']) ? $_FILES["profile_url"] : '';
+		if($user->profile_url != ''){			
+		$user->profile_url = upload_image('user','profile_url');
+		}
+	}
 	if ( isset( $_POST['last_name'] ) ) {
 		$user->last_name = sanitize_text_field( $_POST['last_name'] );
 	}

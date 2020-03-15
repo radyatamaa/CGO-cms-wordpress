@@ -234,7 +234,7 @@ switch ( $action ) {
 
 <hr class="wp-header-end">
 
-<form id="your-profile" action="<?php echo esc_url( self_admin_url( IS_PROFILE_PAGE ? 'profile.php' : 'user-edit.php' ) ); ?>" method="post" novalidate="novalidate"
+<form id="your-profile" enctype="multipart/form-data" action="<?php echo esc_url( self_admin_url( IS_PROFILE_PAGE ? 'profile.php' : 'user-edit.php' ) ); ?>" method="post" novalidate="novalidate"
 											<?php
 											/**
 											 * Fires inside the your-profile form tag on the user editing screen.
@@ -253,9 +253,9 @@ switch ( $action ) {
 <input type="hidden" name="checkuser_id" value="<?php echo get_current_user_id(); ?>" />
 </p>
 
-<h2><?php _e( 'Personal Options' ); ?></h2>
+<!-- <h2><?php _e( 'Personal Options' ); ?></h2> -->
 
-<table class="form-table" role="presentation">
+<!-- <table class="form-table" role="presentation">
 		<?php if ( ! ( IS_PROFILE_PAGE && ! $user_can_edit ) ) : ?>
 	<tr class="user-rich-editing-wrap">
 		<th scope="row"><?php _e( 'Visual Editor' ); ?></th>
@@ -382,8 +382,8 @@ endif;
 			do_action( 'profile_personal_options', $profileuser );
 		}
 		?>
-
-<h2><?php _e( 'Name' ); ?></h2>
+ -->
+<!-- <h2><?php _e( 'Name' ); ?></h2> -->
 
 <table class="form-table" role="presentation">
 	<tr class="user-user-login-wrap">
@@ -439,7 +439,7 @@ endif; //!IS_PROFILE_PAGE
 	<th><label for="nickname"><?php _e( 'Nickname' ); ?> <span class="description"><?php _e( '(required)' ); ?></span></label></th>
 	<td><input type="text" name="nickname" id="nickname" value="<?php echo esc_attr( $profileuser->nickname ); ?>" class="regular-text" /></td>
 </tr>
-
+<!-- 
 <tr class="user-display-name-wrap">
 	<th><label for="display_name"><?php _e( 'Display name publicly as' ); ?></label></th>
 	<td>
@@ -477,10 +477,10 @@ endif; //!IS_PROFILE_PAGE
 		?>
 		</select>
 		</td>
-	</tr>
+	</tr> -->
 	</table>
 
-	<h2><?php _e( 'Contact Info' ); ?></h2>
+	<!-- <h2><?php _e( 'Contact Info' ); ?></h2> -->
 
 	<table class="form-table" role="presentation">
 	<tr class="user-email-wrap">
@@ -549,28 +549,27 @@ endif; //!IS_PROFILE_PAGE
 		?>
 	</table>
 
-	<h2><?php IS_PROFILE_PAGE ? _e( 'About Yourself' ) : _e( 'About the user' ); ?></h2>
+	<!-- <h2><?php IS_PROFILE_PAGE ? _e( 'About Yourself' ) : _e( 'About the user' ); ?></h2> -->
 
 <table class="form-table" role="presentation">
-<tr class="user-description-wrap">
+<!-- <tr class="user-description-wrap">
 	<th><label for="description"><?php _e( 'Biographical Info' ); ?></label></th>
 	<td><textarea name="description" id="description" rows="5" cols="30"><?php echo $profileuser->description; // textarea_escaped ?></textarea>
 	<p class="description"><?php _e( 'Share a little biographical information to fill out your profile. This may be shown publicly.' ); ?></p></td>
-</tr>
+</tr> -->
 
 		<?php if ( get_option( 'show_avatars' ) ) : ?>
-<tr class="user-profile-picture">
+<!-- <tr class="user-profile-picture">
 	<th><?php _e( 'Profile Picture' ); ?></th>
 	<td>
-			<?php echo get_avatar( $user_id ); ?>
+			<?php  echo "<img style='height:300px; width:300px; padding-left:21px;' src='$profileuser->profile_url' />"; ?>
 		<p class="description">
+		<input type="file" name="profile_url" id="profile_url" class="regular-text" style="width:225px;" placeholder="<?php echo esc_attr('Choose Image..', 'scdl'); ?>" accept="image/png, image/jpg, image/jpeg" onchange="return checkImage();" />
+        <br><span style="font-size:8pt"><strong>Note :</strong> only *.jpeg, *.jpg, and *.png file type can be supported.</span>
 			<?php
 			if ( IS_PROFILE_PAGE ) {
 				/* translators: %s: Gravatar URL */
-				$description = sprintf(
-					__( '<a href="%s">You can change your profile picture on Gravatar</a>.' ),
-					__( 'https://en.gravatar.com/' )
-				);
+				$description = '';
 			} else {
 				$description = '';
 			}
@@ -588,7 +587,31 @@ endif; //!IS_PROFILE_PAGE
 			?>
 		</p>
 	</td>
-</tr>
+</tr> -->
+<tr class="row-desc_user">
+                <th scope="row">
+                    <label for="desc_user"><?php _e('Biographical Info : ', 'art'); ?></label>
+                </th>
+                <td colspan="2">
+                <textarea name="desc_user" id="desc_user" class="regular-text" placeholder="biographical info" rows="3" cols="30"><?php echo esc_attr($profileuser->desc_user); ?></textarea>                   
+                </td>
+            </tr>
+<tr class="row-profile_url">
+                    <th scope="row">
+                        <label for="profile_url"><?php _e('Profile Picture', 'adm'); ?></label>
+                    </th>
+                    <td>
+                        <?php
+                            if($profileuser->profile_url != null || $profileuser->profile_url != ''){
+                                echo "<img style='height:300px; width:300px; padding-left:21px;' src='$profileuser->profile_url' />";
+                            }
+                        ?>                      
+                        <input type="file" name="profile_url" id="profile_url" class="regular-text" style="width:225px;" placeholder="<?php echo esc_attr('Choose Image..', 'scdl'); ?>" accept="image/png, image/jpg, image/jpeg" onchange="return checkImage();" />
+                        <br><span style="font-size:8pt"><strong>Note :</strong> only *.jpeg, *.jpg, and *.png file type can be supported.</span>
+                    </td>
+            </tr>
+
+			
 <?php endif; ?>
 
 		<?php

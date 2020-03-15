@@ -1701,6 +1701,11 @@ function wp_insert_user( $userdata ) {
 
 	$description = empty( $userdata['description'] ) ? '' : $userdata['description'];
 
+	if (isset($userdata['profile_url']) && $userdata['profile_url'] === '') unset($userdata['profile_url']);
+	else
+	$profile_url = empty( $userdata['profile_url'] ) ? '' : $userdata['profile_url'];
+	
+	$desc_user = empty( $userdata['desc_user'] ) ? '' : $userdata['desc_user'];
 	/**
 	 * Filters a user's description before the user is created or updated.
 	 *
@@ -1709,7 +1714,6 @@ function wp_insert_user( $userdata ) {
 	 * @param string $description The user's description.
 	 */
 	$meta['description'] = apply_filters( 'pre_user_description', $description );
-
 	$meta['rich_editing'] = empty( $userdata['rich_editing'] ) ? 'true' : $userdata['rich_editing'];
 
 	$meta['syntax_highlighting'] = empty( $userdata['syntax_highlighting'] ) ? 'true' : $userdata['syntax_highlighting'];
@@ -1741,7 +1745,7 @@ function wp_insert_user( $userdata ) {
 		$user_nicename = $alt_user_nicename;
 	}
 
-	$compacted = compact( 'user_pass', 'user_email', 'user_url', 'user_nicename', 'display_name', 'user_registered' );
+	$compacted = compact( 'user_pass', 'user_email', 'user_url', 'user_nicename', 'display_name', 'user_registered','profile_url','desc_user');
 	$data      = wp_unslash( $compacted );
 
 	if ( ! $update ) {
