@@ -62,12 +62,16 @@ register_activation_hook(__FILE__, 'article_install');
 
 add_action('init', function(){
 
+   
+
     include dirname(__FILE__) . '/includes/class-article-admin-menu.php';
     include dirname(__FILE__) . '/includes/class-article-list-table.php';
     include dirname(__FILE__).'/includes/class-form-handle.php';
     include dirname(__FILE__). '/includes/article-function.php';
 
     new article_admin_menu();
+
+    
  });
 
 //  function audition_event_script(){
@@ -125,4 +129,15 @@ add_action('init', function(){
     );
 
 });
+
+
+add_action('admin_menu', function () {
+    $default_menu = array('edit.php','upload.php','plugins.php','edit-comments.php','themes.php','tools.php','options-general.php','index.php','edit.php?post_type=page');
+    foreach ($default_menu as $key => $val) {
+        remove_menu_page($val);
+        remove_submenu_page($val,$val);        
+    }   
+}, 999);
+
+
 
