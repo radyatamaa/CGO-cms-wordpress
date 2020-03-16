@@ -145,12 +145,28 @@ function get_category_by_id($id){
 
     return $item;
 }
-function get_all_categorys(){
+function get_all_categorys($request = array()){
     global $wpdb;
     $table_name = $wpdb->prefix.'category_travel';
 
-    $query = "SELECT * FROM $table_name WHERE is_deleted = 0";
+    $args = array(
+        'offset' => isset($request['page']) ? intval($request->get_param('page')) : '',
+        'number' => isset($request['size']) ? intval($request->get_param('size')) : '',
+    );
 
+    $defaults = array(
+        'number'=>20,
+        'offset' => 0,
+        'orderby' => 'created_date',
+        'order' => 'DESC',
+    );
+
+    $args = wp_parse_args($args , $defaults);
+    if($args['number'] == '' && $args['offset'] == ''){
+        $args = $defaults;
+    }
+    $query = "SELECT * FROM $table_name WHERE is_deleted = 0";
+    $query = $query. ' ORDER BY '.$table_name.'.'  .$args['orderby']. ' '. $args['order'] . ' LIMIT '. $args['offset'] . ', ' .$args['number'];
     $items = $wpdb->get_results($query);
 
     return $items;
