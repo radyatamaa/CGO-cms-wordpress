@@ -41,7 +41,7 @@ class Article_Form_Handler
 
         $field_id = isset($_GET['id']) ?intval($_GET['id']) : 0;
         $title = isset($_POST['title']) ? stripslashes(sanitize_text_field( $_POST['title'] )) : '';
-        $description = isset($_POST['description']) ? stripslashes(sanitize_text_field( $_POST['description'] )) : '';
+        $description = isset($_POST['description']) ? strval($_POST['description']) : '';
         $category = isset($_POST['category_travel']) ? json_encode($_POST['category_travel']) : '';
         $time = isset($_POST['description']) ? stripslashes(sanitize_text_field( $_POST['time'] )) : '';
         $file = file_exists($_FILES['url_file']['tmp_name']) ? $_FILES["url_file"] : '';

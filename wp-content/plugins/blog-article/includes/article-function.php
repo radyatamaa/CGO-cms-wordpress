@@ -93,6 +93,9 @@ function get_all_article_api($request = array()){
         $query = $query. ' ORDER BY '.$table_name.'.'  .$args['orderby']. ' '. $args['order'] . ' LIMIT '. $args['offset'] . ', ' .$args['number'];
         $items = $wpdb->get_results($query);
 
+        foreach($items as $item){
+            $item->description = stripslashes(sanitize_text_field( $item->description ));
+        }
         wp_cache_set($cache_key, $items,'art');
     }
 
@@ -179,7 +182,7 @@ function get_article_by_category_id_api($request = array()){
 
     $table_name = $wpdb->prefix.'article';
 
-    $query = "SELECT * FROM $table_name WHERE ";
+    $query = "SELECT * FROM $table_name WHERE is_deleted = 0 AND ";
 
     $category_array = json_decode($category_ids);
 
@@ -194,6 +197,9 @@ function get_article_by_category_id_api($request = array()){
 
     $item = $wpdb->get_results($query);
 
+    foreach($item as $items){
+        $items->description = stripslashes(sanitize_text_field( $items->description ));
+    }
     return $item;
  }
 

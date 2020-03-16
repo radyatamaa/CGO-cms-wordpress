@@ -74,22 +74,22 @@ add_action('init', function(){
     
  });
 
-//  function audition_event_script(){
-//       //jQuery UI file
-//     wp_enqueue_script('jquery-ui', 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js', array('jquery'), '1.12.1');
-//     //CSS UI theme css file
-//     wp_enqueue_style('jquery-ui-css', 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.css', false, '1.12.1');
-//     // //jQuery Time Picker
-//     // wp_enqueue_script('jquery-timepicker', 'https://cdn.jsdelivr.net/timepicker.js/latest/timepicker.min.js', array('jquery'), '2.2.0');
-//     // //CSS Time Picker theme css file
-//     // wp_enqueue_style('jquery-timepicker-css', 'https://cdn.jsdelivr.net/timepicker.js/latest/timepicker.min.css', false, '2.2.0');
-//     //jQuery HTML Editor by tiny mce
-//     wp_enqueue_script('jquery-html-editor', 'https://cdn.ckeditor.com/4.11.1/standard/ckeditor.js', array('jquery'),'4.11.1');
-//  }
+
+ function article_script(){
+    //jQuery UI file
+  wp_enqueue_script('jquery-ui', 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js', array('jquery'), '1.12.1');
+  //CSS UI theme css file
+  wp_enqueue_style('jquery-ui-css', 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.css', false, '1.12.1');
+  // //jQuery Time Picker
+  // wp_enqueue_script('jquery-timepicker', 'https://cdn.jsdelivr.net/timepicker.js/latest/timepicker.min.js', array('jquery'), '2.2.0');
+  // //CSS Time Picker theme css file
+  // wp_enqueue_style('jquery-timepicker-css', 'https://cdn.jsdelivr.net/timepicker.js/latest/timepicker.min.css', false, '2.2.0');
+  //jQuery HTML Editor by tiny mce
+  wp_enqueue_script('jquery-html-editor', 'https://cdn.ckeditor.com/4.11.1/standard/ckeditor.js', array('jquery'),'4.11.1');
+}
 
 
-//  add_action('admin_enqueue_scripts' , 'audition_event_script');
-
+add_action('admin_enqueue_scripts' , 'article_script');
 
  add_action('rest_api_init', function(){
 
