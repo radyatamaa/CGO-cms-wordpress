@@ -111,7 +111,7 @@ function get_all_article_api($request = array()){
 
     $item = $wpdb->get_row($query);
 
-    $item->category_travel = json_decode($item->category_travel);
+    // $item->category_travel = json_decode($item->category_travel);
 
     return $item;
  }
