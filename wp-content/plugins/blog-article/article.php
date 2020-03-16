@@ -92,6 +92,9 @@ add_action('init', function(){
 
 
  add_action('rest_api_init', function(){
+
+    header("Access-Control-Allow-Origin: *");
+    
     register_rest_route(
         'cgo',
         '/article',
@@ -112,6 +115,15 @@ add_action('init', function(){
 
     register_rest_route(
         'cgo',
+        '/article/category_id',
+        array(
+            'methods' => 'GET',
+            'callback' => 'get_article_by_category_id_api',
+        )
+    );
+
+    register_rest_route(
+        'cgo',
         '/users/username',
         array(
             'methods' => 'GET',
@@ -127,6 +139,17 @@ add_action('init', function(){
             'callback' => 'get_all_categorys',
         )
     );
+
+    register_rest_route(
+        'cgo',
+        '/category/id',
+        array(
+            'methods' => 'GET',
+            'callback' => 'get_by_id_category',
+        )
+    );
+
+
 
 });
 

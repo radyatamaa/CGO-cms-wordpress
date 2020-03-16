@@ -156,6 +156,55 @@ function get_all_categorys(){
     return $items;
 }
 
+function get_article_by_category_id_api($request = array()){
+    global $wpdb;
+
+    $category_ids = isset($request['category_ids']) ? stripslashes(sanitize_text_field($request->get_param('category_ids'))) : '';
+
+    $table_name = $wpdb->prefix.'article';
+
+    $query = "SELECT * FROM $table_name WHERE ";
+
+    $category_array = json_decode($category_ids);
+
+    foreach($category_array as $index => $val){
+
+        if($index == 0){
+            $query .= 'category_travel LIKE ' . '"%' . $val . '%"';
+        }else{
+            $query .= ' OR category_travel LIKE ' . '"%' . $val . '%"';
+        }
+    }
+
+    $item = $wpdb->get_results($query);
+
+    return $item;
+ }
+
+function get_by_id_category($request = array()){
+    global $wpdb;
+
+    $category_ids = isset($request['id']) ? stripslashes(sanitize_text_field($request->get_param('id'))) : '';
+
+    $table_name = $wpdb->prefix.'category_travel';
+    
+    $query = "SELECT * FROM $table_name WHERE ";
+
+    $category_ids_array = json_decode($category_ids);
+
+    foreach($category_ids_array as $index => $val){
+        if($index == 0){
+            $query .= 'id=' . $val;
+        }else{
+            $query .= ' OR id=' . $val;
+        }
+    }
+
+    $item = $wpdb->get_results($query);
+
+    return $item;
+
+}
  /**
   * Fetch all audition event from database
   *
